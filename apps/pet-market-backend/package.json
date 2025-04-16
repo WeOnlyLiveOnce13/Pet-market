@@ -1,0 +1,55 @@
+{
+  "name": "@pet-market/pet-market-backend",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "targets": {
+      "build": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "webpack-cli build",
+          "args": [
+            "node-env=production"
+          ]
+        },
+        "configurations": {
+          "development": {
+            "args": [
+              "node-env=development"
+            ]
+          }
+        }
+      },
+      "serve": {
+        "executor": "@nx/js:node",
+        "defaultConfiguration": "development",
+        "dependsOn": [
+          "build"
+        ],
+        "options": {
+          "buildTarget": "@pet-market/pet-market-backend:build",
+          "runBuildTargetDependencies": false
+        },
+        "configurations": {
+          "development": {
+            "buildTarget": "@pet-market/pet-market-backend:build:development"
+          },
+          "production": {
+            "buildTarget": "@pet-market/pet-market-backend:build:production"
+          }
+        }
+      },
+      "test": {
+        "options": {
+          "passWithNoTests": true
+        }
+      }
+    }
+  },
+  "prisma": {
+    "seed": "npx ts-node ./prisma/seed.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.6.0"
+  }
+}
