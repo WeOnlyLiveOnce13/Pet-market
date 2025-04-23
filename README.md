@@ -22,17 +22,19 @@ Demo gif here ----
 -   🚀 **Payment via Stripe**: Forward the payment to stripe portal.
 -   🛠️ **NgRx State management**: Manage states through NgRx.
 -   👌 **Clean & commented code**: The code is commented follows a clean project structure.
--   🌐 **Deployment**: Deploy both frontend and backend applications on `Cloudways`.
+
 
 
 
 ## 🛠️ Tech Stack 🌟
 
 -   **Nx** to combine both application within a single repository.
+
 ### Frontend
 
 -   **Angular 19** standalone application.
 -   **NgRx** for state management.
+-   **Apollo** for handling graphQL requests
 -   **Tailwindcss** for styling.
 
 ### Database
@@ -42,4 +44,3 @@ Demo gif here ----
 -   **Neon (Postgres)** as the database.
 -   **Prisma** as the ORM.
 -   **Stripe API** for online payments.
--   **Cloudways** for the deployment

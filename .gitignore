@@ -41,4 +41,10 @@ Thumbs.db
 .nx/cache
 .nx/workspace-data
 
+.cursor
+
 test-output
+
+.angular
+
+.env
