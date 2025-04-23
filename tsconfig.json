@@ -8,6 +8,9 @@
     },
     {
       "path": "./apps/pet-market-backend"
+    },
+    {
+      "path": "./apps/pet-market-web-e2e"
     }
   ]
 }

@@ -3,10 +3,10 @@
 
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-  
 
 generator client {
   provider = "prisma-client-js"
+  
 }
 
 datasource db {
@@ -14,7 +14,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Product's Schema:
 model Product {
   id            String      @id @default(uuid())
   name          String
@@ -28,7 +27,6 @@ model Product {
   updatedAt     DateTime    @updatedAt
 }
 
-// Order's Schema:
 model Order {
   id          String      @id @default(uuid())
   userId      String? // Firebase Auth UID (optional for guest orders)
@@ -40,9 +38,6 @@ model Order {
   updatedAt   DateTime    @updatedAt
 }
 
-// OrderItem's Schema:
-// - orderId corresponds to the id of an Order(One Order can have many OrderItem) (One-to-many)
-
 model OrderItem {
   id        String  @id @default(uuid())
   orderId   String
@@ -53,7 +48,6 @@ model OrderItem {
   product   Product @relation(fields: [productId], references: [id])
 }
 
-// OrderStatus Options:
 enum OrderStatus {
   PENDING
   STARTED_DELIVERY

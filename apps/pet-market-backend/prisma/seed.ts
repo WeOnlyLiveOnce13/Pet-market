@@ -1,7 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { productsList } from './productsList';
-
- // Importing runtime to avoid TypeScript errors
+import { productsList } from "./productsList";
 
 const prisma = new PrismaClient();
 

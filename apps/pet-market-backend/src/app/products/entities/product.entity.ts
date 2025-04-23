@@ -1,5 +1,6 @@
 import { ObjectType, Field, Float } from '@nestjs/graphql';
 
+
 @ObjectType()
 export class Product {
   @Field(() => String)
