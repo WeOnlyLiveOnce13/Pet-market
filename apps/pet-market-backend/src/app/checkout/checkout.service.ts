@@ -28,6 +28,9 @@ export class CheckoutService {
       totalAmount: createCheckoutDto.totalAmount,
     });
 
+    console.log('Order created for Stripe payment', order.id);
+
+    
     // Create a new Stripe session
     // await bcz "create" is an async function
     const session = await stripe.checkout.sessions.create({
@@ -43,7 +46,7 @@ export class CheckoutService {
       })),
       mode: 'payment',
       success_url: `${process.env.FRONTEND_URL}/checkout/success?orderId=${order.id}`,
-      cancel_url: `${process.env.FRONTEND_URL}/checkout/cancel`,
+      cancel_url: `${process.env.FRONTEND_URL}/checkout/cancel?orderId=${order.id}`,
       metadata: {
         orderId: order.id,
       },
