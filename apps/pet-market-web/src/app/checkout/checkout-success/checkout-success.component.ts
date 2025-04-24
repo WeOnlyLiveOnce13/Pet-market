@@ -4,7 +4,9 @@ import { OrderStore } from '../../stores/order.store';
 import { ActivatedRoute } from '@angular/router';
 import { OrderDetailComponent } from '../../orders/components/order-detail/order-detail.component';
 import { CartStore } from '../../stores/cart.store';
-
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { map, pipe, switchMap } from 'rxjs';
+import { OrderStatus } from '@prisma/client';
 
 @Component({
   selector: 'app-checkout-success',
@@ -17,6 +19,23 @@ export class CheckoutSuccessComponent implements OnInit {
   route = inject(ActivatedRoute);
   orderStore = inject(OrderStore);
   cartStore = inject(CartStore);
+  getAndUpdateOrder = rxMethod<string>(
+    pipe(
+      switchMap((orderId) => {
+        return this.orderStore.getOrder(orderId)
+      }),   
+      map((order) => {
+        // Update OrderStatus to Pending IF it is Payment Required
+        if (order.status === OrderStatus.PAYMENT_REQUIRED) {
+          return this.orderStore.updateOrder({
+            id: order.id,
+            status: OrderStatus.PENDING
+          })
+        }
+        return null;
+      })
+    ),
+  )
 
 
   constructor() {
@@ -35,6 +54,6 @@ export class CheckoutSuccessComponent implements OnInit {
       return;
     }
 
-    this.orderStore.getOrder(orderId).subscribe();
+    this.getAndUpdateOrder(orderId);
   }
 }

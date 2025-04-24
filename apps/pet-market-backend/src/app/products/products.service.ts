@@ -4,6 +4,8 @@ import { UpdateProductInput } from './dto/update-product.input';
 import { PrismaService } from '../prisma/prisma.service';
 import { Product } from '@prisma/client';
 
+type FindConfig = { featured?: boolean }
+
 
 @Injectable()
 export class ProductsService {
@@ -20,8 +22,21 @@ export class ProductsService {
   }
 
   // Find all products
-  findAll() {
-    return this.prisma.product.findMany();
+  findAll(config: FindConfig = {}) {
+    return this.prisma.product.findMany({
+      // If featured is defined, filter by featured:
+          // if featured = true, filter by isFeatured = true
+          // if featured = false, filter by isFeatured = false
+          // if featured is undefined, Send ALL products
+      
+      // If True or False: filter by the value
+      where: config.featured !== undefined
+      ? {
+          isFeatured: config.featured,
+        } 
+      : undefined,
+
+    });
   }
 
   // Find one product by id
