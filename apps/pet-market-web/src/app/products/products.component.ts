@@ -35,7 +35,6 @@ export class ProductsComponent {
         this.destroyed()            // Unsubscribe when the component is destroyed  
       )
       .subscribe((term) => {
-        console.log({ term });
         this.productStore.searchProducts(term);
       });
     });

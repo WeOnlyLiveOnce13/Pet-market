@@ -1,4 +1,5 @@
 import { Route } from '@angular/router';
+import { authGuard } from './auth/auth.guard';
 
 export const appRoutes: Route[] = [
   {
@@ -48,6 +49,28 @@ export const appRoutes: Route[] = [
       return mod.CheckoutSuccessComponent;
     },
   },
+  {
+    path: 'auth/login',
+    loadComponent: () => 
+      import('./auth/login/login.component').then((c) => c.LoginComponent),
+  },
+  {
+    path: 'auth/signup',
+    loadComponent: () => 
+      import('./auth/signup/signup.component').then((c) => c.SignupComponent),
+  },
+  {
+    path: 'orders',
+    canActivate: [authGuard],
+    loadComponent: () => 
+      import('./orders/orders.component').then((c) => c.OrdersComponent),
+  },
+  {
+    path: 'orders/:id',
+    loadComponent: () => 
+      import('./order/order.component').then((c) => c.OrderComponent),
+  },
+
 
   // Redirect wrong routes to home
   {

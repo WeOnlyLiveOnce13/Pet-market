@@ -28,7 +28,15 @@ export class CreateOrderInput {
 
   // @Field(() => String)
   // token!: string;
-  
-  
-  
 }
+
+
+// When creating an order, you send:
+// - items: an array of OrderItemInput
+// - totalAmount: the total amount of the order
+// - userId: the userId of the user 
+export interface CreateOrderServiceDto {
+  items: OrderItemInput[];
+  totalAmount: number;
+  userId?: string;
+} 

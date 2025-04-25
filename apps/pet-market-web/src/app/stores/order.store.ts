@@ -3,7 +3,8 @@ import { patchState, signalStore, withMethods, withState } from "@ngrx/signals";
 import { rxMethod } from "@ngrx/signals/rxjs-interop";
 import { Order, OrderItem, OrderStatus, Product } from "@prisma/client";
 import { Apollo, gql } from "apollo-angular";
-import {  map, pipe, switchMap, tap } from "rxjs";
+import {  catchError, EMPTY, from, map, pipe, switchMap,  tap } from "rxjs";
+import { AuthService } from "../auth/auth.service";
 
 
 // Query from GraphQL
@@ -66,6 +67,27 @@ const DELETE_UNPAID_ORDER = gql`
     }
 `
 
+const GET_USER_ORDERS = gql`
+    query GetUserOrders($token: String!) {
+        userOrders(token: $token) {
+            id
+            totalAmount
+            status
+            items {
+                id
+                quantity
+                price
+                product {
+                    id
+                    name
+                    image
+                }
+            }
+            createdAt
+        }
+    }
+`
+
 export type OrderItemWithProduct = OrderItem & {
     product: Product;
 }
@@ -78,13 +100,14 @@ type OrderStoreState = {
     orders: OrderWithItems[];
     orderDetail: OrderWithItems | null;
     error: string | null;
+    loading: boolean;
 }
 
 const initialState: OrderStoreState = {
     orders: [],
     orderDetail: null,
     error: null,
-
+    loading: false,
 }
 
 export const OrderStore = signalStore({
@@ -92,7 +115,11 @@ export const OrderStore = signalStore({
 
     },
     withState(() => initialState),
-    withMethods((store, apollo = inject(Apollo)) => ({
+    withMethods((
+        store, 
+        apollo = inject(Apollo), 
+        authService = inject(AuthService)
+    ) => ({
         // Method 1: get order
         getOrder(id: string) {
             
@@ -122,7 +149,50 @@ export const OrderStore = signalStore({
                 )
         },
 
-        // Method 2: update order
+        // Method 2: get user orders
+        getUserOrders() {
+            patchState(store, { loading: true , error: null});
+            return from(authService.getToken())
+                .pipe(
+                    // filter((user) => !!user),
+                    // take(1),
+                    // switchMap((user) => ),
+                    switchMap((token) => {
+                        if (!token) {
+                            throw new Error('User not authenticated');
+                        }
+                        
+                        
+                        
+                        return apollo.query<{ userOrders: OrderWithItems[] }>({
+                            query: GET_USER_ORDERS,
+                            variables: {
+                                token
+                            },
+                            // fetchPolicy: 'network-only' -> only fetch from network, not from cache
+                            //fetchPolicy: 'network-only'
+                        })  
+                    }),
+                    tap((result) => {
+                        patchState(store, { 
+                            orders: result.data.userOrders,
+                            loading: false,
+                            error: null
+                        });
+                    }),
+                    catchError((error) => {
+                        patchState(store, {
+                            loading: false,
+                            error: error.message
+                        });
+                        return EMPTY
+                    })
+                        
+                    
+                )
+        },
+
+        // Method 3: update order
         updateOrder: rxMethod<{ id: string, status: OrderStatus }>(
             pipe(
                 switchMap(({ id, status }) => apollo.mutate<{
@@ -138,7 +208,7 @@ export const OrderStore = signalStore({
             )
         ),
 
-        // Method 3: delete order
+        // Method 4: delete order
         removeUnpaidOrder: rxMethod<string>(
             pipe(
                 switchMap(( id ) => apollo.mutate<{
@@ -163,7 +233,7 @@ export const OrderStore = signalStore({
             )
         ),
 
-        // Method 4: set error
+        // Method 5: set error
         setError(error: string) {
             patchState(store, { 
                 error 
