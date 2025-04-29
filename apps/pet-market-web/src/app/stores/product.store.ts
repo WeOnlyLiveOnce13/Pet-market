@@ -1,8 +1,9 @@
 import { inject } from '@angular/core';
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { Product } from '@prisma/client';
 import { Apollo, gql } from 'apollo-angular';
-import { catchError, EMPTY, map, tap } from 'rxjs';
+import { catchError, EMPTY, map, pipe, switchMap, tap } from 'rxjs';
 
 const GET_PRODUCTS = gql`
   query GetProducts {
@@ -30,6 +31,19 @@ const SEARCH_PRODUCTS = gql`
     }
   }
 `;
+
+const GET_FEATURED_PRODUCTS = gql`
+  query GetFeaturedProducts($featured: Boolean) {
+    products(featured: $featured) {
+      id
+      name
+      description
+      price
+      image
+      stripePriceId
+  }   
+}
+`
 
 // Product State (data shape)
 export interface ProductState {
@@ -95,7 +109,29 @@ export const ProductStore = signalStore(
         .subscribe();
     },
 
-    // 2. SEARCH PRODUCTS
+    // 2. LOAD FEATURED PRODUCTS
+    getFeaturedProducts: rxMethod<boolean>(
+      pipe(
+        switchMap((featured) => apollo.query<{ products: Product[] }>({
+          query: GET_FEATURED_PRODUCTS,
+          variables: { featured },
+        })),
+        tap({
+          next: ({ data }) =>
+            patchState(store, {
+              products: data.products,
+              loading: false,
+              error: null,
+            }),
+          error: (error) =>
+            patchState(store, {
+              error: error.message,
+              loading: false,
+            }),
+        }),
+      )
+    ),
+    // 3. SEARCH PRODUCTS
     searchProducts(term: string) {
 
       // Update loading state    
@@ -131,6 +167,9 @@ export const ProductStore = signalStore(
         )
         .subscribe();
     },
+
+  
+
   }))
 );
 

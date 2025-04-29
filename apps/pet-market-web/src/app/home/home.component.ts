@@ -16,7 +16,7 @@ export class HomeComponent {
   cartStore = inject(CartStore);
 
   constructor() {
-    // this.productStore.loadFeaturedProducts();
+    this.productStore.getFeaturedProducts(true);
   }
 
   onAddToCart(product: Product) {

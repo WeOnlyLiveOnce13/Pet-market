@@ -2,6 +2,7 @@ import {
   Controller,
   Post,
   Body,
+  Headers,
   HttpException,
 } from '@nestjs/common';
 import { CheckoutService } from './checkout.service';
@@ -15,8 +16,12 @@ export class CheckoutController {
 
   // Create a checkout session
   @Post()
-  async create(@Body() createCheckoutDto: CreateCheckoutDto) {
-    const session = await this.checkoutService.create(createCheckoutDto);
+  async create(
+    @Body() createCheckoutDto: CreateCheckoutDto,
+    @Headers('Authorization') authHeader: string
+  ) {
+    const token = authHeader ? authHeader.substring(7) : '';
+    const session = await this.checkoutService.create(createCheckoutDto, token);
 
     if (!session.url) {
       throw new HttpException(

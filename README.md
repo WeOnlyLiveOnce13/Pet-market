@@ -7,7 +7,7 @@ A monorepo online e-Commerce web application allowing users to purchase AI-gener
 
 ## 🌟 Demo 🌟
 
-Demo gif here ----
+![Demo GIF](./public/demo.gif)
 
 
 ##  🚀 Features 🚀 

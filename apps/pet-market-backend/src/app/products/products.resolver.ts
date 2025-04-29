@@ -3,6 +3,7 @@ import { ProductsService } from './products.service';
 import { Product } from './entities/product.entity';
 import { CreateProductInput } from './dto/create-product.input';
 import { UpdateProductInput } from './dto/update-product.input';
+import { features } from 'process';
 
 @Resolver(() => Product)
 export class ProductsResolver {
@@ -17,8 +18,11 @@ export class ProductsResolver {
 
   // Find all products
   @Query(() => [Product], { name: 'products' })
-  findAll() {
-    return this.productsService.findAll();
+  findAll(
+    @Args('featured', {type: () => Boolean, nullable: true}) 
+    featured?: boolean
+  ) {
+    return this.productsService.findAll({featured});
   }
 
   // Find one product by id
