@@ -41,10 +41,17 @@ Thumbs.db
 .nx/cache
 .nx/workspace-data
 
-.cursor
+/.cursor
 
 test-output
 
 .angular
 
 .env
+.prettierignore
+.nx
+.vscode
+.cursor
+/.cursor
+/.vscode
+/.nx
